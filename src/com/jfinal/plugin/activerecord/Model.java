@@ -569,7 +569,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Update model.
 	 */
-	public boolean update(String whereKeys) {
+	public boolean updateBy(String whereKeys) {
 		if (getModifyFlag().isEmpty())
 			return false;
 
