@@ -46,7 +46,8 @@ public class Table {
 	public Table(String name, String primaryKey, Class<? extends Model<?>> modelClass) {
 		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Table name can not be blank.");
-		if (StrKit.isBlank(primaryKey))
+		// may
+		if (StrKit.isBlank(primaryKey) && !name.startsWith("view_"))
 			throw new IllegalArgumentException("Primary key can not be blank.");
 		if (modelClass == null)
 			throw new IllegalArgumentException("Model class can not be null.");
