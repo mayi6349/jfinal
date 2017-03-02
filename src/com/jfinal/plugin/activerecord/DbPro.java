@@ -870,6 +870,21 @@ public class DbPro {
 	 * @see #paginate(int, int, String, String, Object...)
 	 * @return Page
 	 */
+	public List<Record> paginateListByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		ICache cache = config.getCache();
+		List<Record> result = cache.get(cacheName, key);
+		if (result == null) {
+			result = paginateList(pageNumber, pageSize, select, sqlExceptSelect, paras);
+			cache.put(cacheName, key, result);
+		}
+		return result;
+	}
+	
+	/**
+	 * Paginate by cache.
+	 * @see #paginate(int, int, String, String, Object...)
+	 * @return Page
+	 */
 	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = config.getCache();
 		Page<Record> result = cache.get(cacheName, key);

@@ -529,6 +529,23 @@ public class Db {
 	}
 	
 	/**
+	 * Paginate.
+	 * @param pageNumber the page number
+	 * @param pageSize the page size
+	 * @param select the select part of the sql statement
+	 * @param sqlExceptSelect the sql statement excluded select part
+	 * @param paras the parameters of sql
+	 * @return the Page object
+	 */
+	public static List<Record> paginateListByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
+		sql = sql.toLowerCase();
+		int start = sql.indexOf("from");
+		String select = sql.substring(0, start);
+		String sqlExceptSelect = sql.substring(start,sql.length());
+		return dbPro.paginateListByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, paras);
+	}
+	
+	/**
 	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
 	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
