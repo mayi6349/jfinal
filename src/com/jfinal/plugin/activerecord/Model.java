@@ -575,13 +575,21 @@ public abstract class Model<M extends Model> implements Serializable {
 
 		Table table = getTable();
 		String[] pKeys = null;
-
+		String[] oldkeys = table.getPrimaryKey();
+		
+		// may
+		String defaultKeys = "";
+		for (String key : oldkeys) {
+			defaultKeys = key + ",";
+		}
+		defaultKeys = defaultKeys.substring(0, defaultKeys.length() - 1);
+		
 		if (StringUtils.isEmpty(whereKeys)) {
 			pKeys = table.getPrimaryKey();
 		} else {
 			pKeys = whereKeys.split(",");
 			table.setPrimaryKey(whereKeys);
-		}
+		} 
 		// String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
 			Object id = attrs.get(pKey);
@@ -594,7 +602,8 @@ public abstract class Model<M extends Model> implements Serializable {
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelUpdate(table, attrs, getModifyFlag(), sql, paras);
-
+		// may
+		table.setPrimaryKey(defaultKeys);
 		if (paras.size() <= 1) { // Needn't update
 			return false;
 		}

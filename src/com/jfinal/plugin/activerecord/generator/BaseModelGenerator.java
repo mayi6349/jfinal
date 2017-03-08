@@ -40,10 +40,14 @@ public class BaseModelGenerator {
 		"public abstract class %s<M extends %s<M>> extends Model<M> implements IBean {%n%n";
 	protected String setterTemplate =
 			"\tpublic void %s(%s %s) {%n" +
+//				"\t\tset(\"%s\", %s);%n" +
 				"\t\tset(\"%s\", %s);%n" +
 			"\t}%n%n";
 	protected String getterTemplate =
 			"\tpublic %s %s() {%n" +
+				"\t\tif (get(\"%s\") == null) {%n" +	
+					"\t\t\treturn get(\"%s\");%n" +
+				"\t\t}%n" +
 				"\t\treturn get(\"%s\");%n" +
 			"\t}%n%n";
 	
@@ -100,13 +104,14 @@ public class BaseModelGenerator {
 		String setterMethodName = "set" + StrKit.firstCharToUpperCase(columnMeta.attrName);
 		// 如果 setter 参数名为 java 语言关键字，则添加下划线前缀 "_"
 		String argName = javaKeyword.contains(columnMeta.attrName) ? "_" + columnMeta.attrName : columnMeta.attrName;
+//		String setter = String.format(setterTemplate, setterMethodName, columnMeta.javaType, argName, columnMeta.name, argName, columnMeta.attrName, argName);
 		String setter = String.format(setterTemplate, setterMethodName, columnMeta.javaType, argName, columnMeta.name, argName);
 		ret.append(setter);
 	}
 	
 	protected void genGetMethodName(ColumnMeta columnMeta, StringBuilder ret) {
 		String getterMethodName = "get" + StrKit.firstCharToUpperCase(columnMeta.attrName);
-		String getter = String.format(getterTemplate, columnMeta.javaType, getterMethodName, columnMeta.name);
+		String getter = String.format(getterTemplate, columnMeta.javaType, getterMethodName, columnMeta.name, columnMeta.attrName, columnMeta.name);
 		ret.append(getter);
 	}
 	
