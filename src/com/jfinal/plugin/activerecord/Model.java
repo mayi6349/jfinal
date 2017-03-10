@@ -776,6 +776,51 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 
 	/**
+	 * Find model by composite id values and load specific columns only.
+	 * 
+	 * <pre>
+	 * Example:
+	 * User user = User.dao.findByIdLoadColumns("id1,id2",new Object[]{123, 456}, "name, age");
+	 * </pre>
+	 * 
+	 * @param idValues
+	 *            the composite id values of the model
+	 * @param columns
+	 *            the specific columns to load
+	 */
+	public M findByWhereKeysLoadColumns(String whereKeys, Object[] idValues, String columns) {
+		Table table = getTable();
+
+		String sql = "";
+		String defaultKeys = "";
+		if (!StringUtils.isEmpty(whereKeys)) {
+			String[] oldkeys = table.getPrimaryKey();
+			// may
+			for (String key : oldkeys) {
+				defaultKeys = key + ",";
+			}
+			defaultKeys = defaultKeys.substring(0, defaultKeys.length() - 1);
+			table.setPrimaryKey(whereKeys);
+
+			if (table.getPrimaryKey().length != idValues.length)
+				throw new IllegalArgumentException(
+						"id values error, need " + table.getPrimaryKey().length + " id value");
+
+			sql = getConfig().dialect.forModelFindById(table, columns);
+			table.setPrimaryKey(defaultKeys);
+		} else {
+
+			if (table.getPrimaryKey().length != idValues.length)
+				throw new IllegalArgumentException(
+						"id values error, need " + table.getPrimaryKey().length + " id value");
+			sql = getConfig().dialect.forModelFindById(table, columns);
+		}
+
+		List<M> result = find(sql, idValues);
+		return result.size() > 0 ? result.get(0) : null;
+	}
+
+	/**
 	 * Set attributes with other model.
 	 * 
 	 * @param model
