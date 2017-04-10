@@ -38,7 +38,7 @@ import com.jfinal.token.ITokenCache;
  */
 final public class Constants {
 	
-	private boolean devMode = Const.DEFAULT_DEV_MODE;
+	public static boolean devMode = Const.DEFAULT_DEV_MODE;
 	
 	private String baseUploadPath = Const.DEFAULT_BASE_UPLOAD_PATH;
 	private String baseDownloadPath = Const.DEFAULT_BASE_DOWNLOAD_PATH;
@@ -71,7 +71,7 @@ final public class Constants {
 	 * @param devMode the development mode
 	 */
 	public void setDevMode(boolean devMode) {
-		this.devMode = devMode;
+		Constants.devMode = devMode;
 	}
 	
 	/**
