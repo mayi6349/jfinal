@@ -184,4 +184,12 @@ public class Sqlite3Dialect extends Dialect {
 		ret.append(" limit ").append(offset).append(", ").append(pageSize);
 		return ret.toString();
 	}
+	
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		int offset = pageSize * (pageNumber - 1);
+		StringBuilder ret = new StringBuilder();
+		ret.append(sql).append(" ");
+		ret.append(" limit ").append(offset).append(", ").append(pageSize);
+		return ret.toString();
+	}
 }

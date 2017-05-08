@@ -311,6 +311,19 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 
+	public Page<M> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
+		Config config = getConfig();
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			return paginate(config, conn, pageNumber, pageSize, sql, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
+	}
+
 	/**
 	 * 指定分页 sql 最外层以是否含有 group by 语句
 	 * 
@@ -336,6 +349,56 @@ public abstract class Model<M extends Model> implements Serializable {
 	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select,
 			String sqlExceptSelect, Object... paras) throws Exception {
 		return doPaginate(config, conn, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
+	}
+
+	// May
+	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras)
+			throws Exception {
+		return doPaginate(config, conn, pageNumber, pageSize, null, sql, paras);
+	}
+
+	// May
+	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql,
+			String sql, Object... paras) throws Exception {
+		if (pageNumber < 1 || pageSize < 1) {
+			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
+		}
+		if (config.dialect.isTakeOverModelPaginate()) {
+			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, isGroupBySql, sql,
+					paras);
+		}
+
+		List result = Db.query(config, conn, sql, paras);
+		int size = result.size();
+		if (isGroupBySql == null) {
+			isGroupBySql = size > 1;
+		}
+
+		long totalRow;
+		if (isGroupBySql) {
+			totalRow = size;
+		} else {
+			totalRow = (size > 0) ? ((Number) result.get(0)).longValue() : 0;
+		}
+		if (totalRow == 0) {
+			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0); // totalRow
+																					// =
+																					// 0;
+		}
+
+		int totalPage = (int) (totalRow / pageSize);
+		if (totalRow % pageSize != 0) {
+			totalPage++;
+		}
+
+		if (pageNumber > totalPage) {
+			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, totalPage, (int) totalRow);
+		}
+
+		// --------
+		String sql1 = config.dialect.forPaginate(pageNumber, pageSize, sql);
+		List<M> list = find(conn, sql1, paras);
+		return new Page<M>(list, pageNumber, pageSize, totalPage, (int) totalRow);
 	}
 
 	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql,
@@ -576,20 +639,20 @@ public abstract class Model<M extends Model> implements Serializable {
 		Table table = getTable();
 		String[] pKeys = null;
 		String[] oldkeys = table.getPrimaryKey();
-		
+
 		// may
 		String defaultKeys = "";
 		for (String key : oldkeys) {
 			defaultKeys = key + ",";
 		}
 		defaultKeys = defaultKeys.substring(0, defaultKeys.length() - 1);
-		
+
 		if (StringUtils.isEmpty(whereKeys)) {
 			pKeys = table.getPrimaryKey();
 		} else {
 			pKeys = whereKeys.split(",");
 			table.setPrimaryKey(whereKeys);
-		} 
+		}
 		// String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
 			Object id = attrs.get(pKey);

@@ -205,6 +205,17 @@ public class OracleDialect extends Dialect {
 		return ret.toString();
 	}
 	
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		int start = (pageNumber - 1) * pageSize;
+		int end = pageNumber * pageSize;
+		StringBuilder ret = new StringBuilder();
+		ret.append("select * from ( select row_.*, rownum rownum_ from (  ");
+		ret.append(sql).append(" ");
+		ret.append(" ) row_ where rownum <= ").append(end).append(") table_alias");
+		ret.append(" where table_alias.rownum_ > ").append(start);
+		return ret.toString();
+	}
+	
 	public boolean isOracle() {
 		return true;
 	}

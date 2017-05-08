@@ -380,6 +380,13 @@ public class Db {
 		return dbPro.paginate(pageNumber, pageSize, select, sqlExceptSelect);
 	}
 	
+	/**
+	 * @see #paginate(String, int, int, String, String, Object...)
+	 */
+	public static Page<Record> paginate(int pageNumber, int pageSize, String sql) {
+		return dbPro.paginate(pageNumber, pageSize, sql);
+	}
+	
 	static boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		return dbPro.save(config, conn, tableName, primaryKey, record);
 	}

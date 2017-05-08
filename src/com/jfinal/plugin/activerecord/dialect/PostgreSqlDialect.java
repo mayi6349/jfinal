@@ -199,4 +199,12 @@ public class PostgreSqlDialect extends Dialect {
 		ret.append(" limit ").append(pageSize).append(" offset ").append(offset);
 		return ret.toString();
 	}
+	
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		int offset = pageSize * (pageNumber - 1);
+		StringBuilder ret = new StringBuilder();
+		ret.append(sql).append(" ");
+		ret.append(" limit ").append(pageSize).append(" offset ").append(offset);
+		return ret.toString();
+	}
 }

@@ -36,6 +36,8 @@ public abstract class Dialect {
 	// Methods for common
 	public abstract String forTableBuilderDoBuild(String tableName);
 	public abstract String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect);
+	// May
+	public abstract String forPaginate(int pageNumber, int pageSize, String sql);
 	
 	// Methods for Model
 	public abstract String forModelFindById(Table table, String columns);
@@ -65,12 +67,22 @@ public abstract class Dialect {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String sql, Object... paras) throws SQLException {
+		throw new RuntimeException("You should implements this method in " + getClass().getName());
+	}
+	
 	public boolean isTakeOverModelPaginate() {
 		return false;
 	}
 	
 	@SuppressWarnings("rawtypes")
 	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
+		throw new RuntimeException("You should implements this method in " + getClass().getName());
+	}
+	
+	// May
+	@SuppressWarnings("rawtypes")
+	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String sql, Object... paras) throws Exception {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	

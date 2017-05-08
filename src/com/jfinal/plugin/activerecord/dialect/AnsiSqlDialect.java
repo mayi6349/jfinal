@@ -197,6 +197,13 @@ public class AnsiSqlDialect extends Dialect {
 		throw new ActiveRecordException("Your should not invoke this method because takeOverDbPaginate(...) will take over it.");
 	}
 	
+	/**
+	 * SELECT * FROM subject t1 WHERE (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') > = 10 AND (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') < 20 AND t1.key = '123'
+	 */
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		throw new ActiveRecordException("Your should not invoke this method because takeOverDbPaginate(...) will take over it.");
+	}
+	
 	public boolean isTakeOverDbPaginate() {
 		return true;
 	}

@@ -201,4 +201,12 @@ public class MysqlDialect extends Dialect {
 		ret.append(" limit ").append(offset).append(", ").append(pageSize);	// limit can use one or two '?' to pass paras
 		return ret.toString();
 	}
+	
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		int offset = pageSize * (pageNumber - 1);
+		StringBuilder ret = new StringBuilder();
+		ret.append(sql).append(" ");
+		ret.append(" limit ").append(offset).append(", ").append(pageSize);	// limit can use one or two '?' to pass paras
+		return ret.toString();
+	}
 }
